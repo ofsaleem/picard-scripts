@@ -88,7 +88,7 @@ $set(_aTitleReleaseYear,)
 $set(_aTitleDisambig,)
 $set(_aTitleLabel,)
 $set(_aTitleCatalog,)
-$set(_aExtension,)
+$set(_aExtension,1)
 $set(_aNoArtistSort,)
 $set(_aSortOnFirstName,)
 
@@ -332,13 +332,14 @@ $noop(
 ########################################################################
 )
 
-$noop(
+$noop( 
 ------------------------------------------------------------------------
--  Set to "Single" if the primary release type is 'single' AND there   -
--  is only one disc AND there is only one track in the release.        -
-------------------------------------------------------------------------
+- I have changed the order of soundtrack and single, because i think   -
+- single should take precedence. otherwise certain singles of two songs-
+- from a show get tagged as soundtracks, which i think is unhelpful,   -
+- especially as these tend to be licensed bits of soundtracks and not  -
+- original score - omar                                               -
 )
-$if($and($in(%_primaryreleasetype%,single),$lte(%_nTotalDiscs%,1),$lte(%_nTotalTracks%,1)),$set(_nAlbumType,Single))
 
 $noop(
 ------------------------------------------------------------------------
@@ -350,6 +351,14 @@ $if($in(%_secondaryreleasetype%,soundtrack),
     $set(_nAlbumType,Soundtrack)
     $set(_nFeat, [%_nFTA%])
 )
+
+$noop(
+------------------------------------------------------------------------
+-  Set to "Single" if the primary release type is 'single' AND there   -
+-  is only one disc AND there is only one track in the release.        -
+------------------------------------------------------------------------
+)
+$if($or($in(%_primaryreleasetype%,single),$and($lte(%_nTotalDiscs%,1),$lte(%_nTotalTracks%,1))),$set(_nAlbumType,Single))
 
 $noop(
 ------------------------------------------------------------------------
@@ -425,7 +434,7 @@ $if($eq(%_nAlbumType%,Standard),$if($eq($if2(%musicbrainz_albumartistid%,%_cVari
         $set(_nFilePath,%_cUnknownArtist%/%_nYear% %_nANT%/),
         $set(_nFilePath,%_nInitial%/$if(%_aNoArtistSort%,%_nFAA%,%_nFAAPS%)/%_nYear% %_nANT%/)
 )))
-$if(%_aExtension%,$set(_nFilePath,%_nFilePath%/$upper(%_extension%)))
+$if(%_aExtension%,$set(_nFilePath,%_nFilePath%/$lower(%_extension%)))
 
 $noop(
 ------------------------------------------------------------------------
@@ -435,7 +444,7 @@ $noop(
 $if($eq(%_nAlbumType%,Classical),$set(_nFileName,%_nTNum%%_nFeat% %_nTNT%))
 $if($eq(%_nAlbumType%,Soundtrack),$set(_nFileName,%_nTNum% %_nTNT%%_nFeat%))
 $if($eq(%_nAlbumType%,Other),$set(_nFileName,%_nTNum% %_nTNT%))
-$if($eq(%_nAlbumType%,Single),$set(_nFileName,%_nYear% %_nTNT%%_nFeat%))
+$if($eq(%_nAlbumType%,Single),$set(_nFileName,1%_nYear% %_nTNT%%_nFeat%))
 $if($eq(%_nAlbumType%,Standard),$set(_nFileName,%_nTNum% %_nTNT%%_nFeat%))
 
 $noop(
